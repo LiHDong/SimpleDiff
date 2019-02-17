@@ -1,3 +1,7 @@
+/**
+ * To use js object yield dom tree
+ * */
+
 class Element {
 
     constructor(tagName, props, children) {
@@ -8,7 +12,6 @@ class Element {
 
     render() {
         const ele = document.createElement(this.tagName);
-        console.log(Object.getOwnPropertyNames(this.props),233);
         // set the property of tag element
         Object.getOwnPropertyNames(this.props).forEach(key => {
             ele.setAttribute(key, this.props[key]);
