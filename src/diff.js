@@ -1,5 +1,5 @@
 import Patch from "./patch"
-import listDiff from "../lib/diff"
+import {diff as listDiff} from "../lib/diff"
 
 class Diff {
 
@@ -14,12 +14,13 @@ class Diff {
         const currentPatch = [];
         // 节点被删除
         if(newNode === null) {
-            // 重排时节点会被移除，所以此处不进行处理
-            // 文本节点替换
+            // 该情况会在重排时被考虑到，故此处不做处理
+            // 文本节点之间进行比较
         } else if (typeof oldNode === "string" && typeof newNode === "string") {
             if(oldNode !== newNode) {
                 currentPatch.push({type: Patch.TEXT, content: newNode})
             }
+            // Element节点之间进行比较
             // 节点相同，但与原节点的props和children不同
         } else if (
             oldNode.tagName === newNode.tagName &&
@@ -31,10 +32,11 @@ class Diff {
                 currentPatch.push({type: Patch.PROPS, props: patchProps});
             }
             // diff children, 如果节点有ignore属性，则不比较children
-            if(!newNode.props || !newNode.props.hasOwnProperty("ignore")) {
+            if(!newNode.props.hasOwnProperty("ignore")) {
                 this.diffChildren(oldNode.children, newNode.children, index, patches, currentPatch);
             }
             // 节点不同，则直接替换节点
+            // 其它
         } else {
             currentPatch.push({type: Patch.REPLACE, node: newNode})
         }
@@ -44,10 +46,45 @@ class Diff {
     }
 
     diffProps(oldNode, newNode) {
+        let count = 0;
+        const oldProps = oldNode.props;
+        const newProps = newNode.props;
 
+        const propsPatches = {};
+
+        // 变化的属性
+        Object.getOwnPropertyNames(oldProps).forEach(key => {
+            const value = oldProps[key];
+            if(value !== newProps[key]) {
+                count++;
+                propsPatches[key] = newProps[key];
+            }
+        });
+
+        // 新增的属性
+        Object.getOwnPropertyNames(newProps).forEach(key => {
+            if(!oldProps.hasOwnProperty(key)) {
+                count++;
+                propsPatches[key] = newProps[key];
+            }
+        });
+
+        if(count === 0) {
+            return null;
+        }
+
+        return propsPatches;
     }
 
-    diffChildren(oldChildren, newChildren, index, patches) {
+    diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
+        console.log(111);
+        const diffs = listDiff(oldChildren, newChildren, "key");
+        newChildren = diffs.children;
+        console.log(diffs, 2333);
+        if(diffs.moves.length) {
+            const reorderPatch = {type: Patch.REORDER, moves: diffs.moves};
+            currentPatch.push(reorderPatch);
+        }
         let leftNode = null;
         let currentNodeIndex = index;
         /**
@@ -60,7 +97,6 @@ class Diff {
          * */
         oldChildren.forEach((child, i) => {
             const newChild = newChildren[i];
-
             currentNodeIndex = (leftNode && leftNode.count) ?
                 currentNodeIndex + leftNode.count + 1 :
                 currentNodeIndex + 1;
