@@ -77,10 +77,8 @@ class Diff {
     }
 
     diffChildren(oldChildren, newChildren, index, patches, currentPatch) {
-        console.log(111);
         const diffs = listDiff(oldChildren, newChildren, "key");
         newChildren = diffs.children;
-        console.log(diffs, 2333);
         if(diffs.moves.length) {
             const reorderPatch = {type: Patch.REORDER, moves: diffs.moves};
             currentPatch.push(reorderPatch);

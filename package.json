@@ -4,7 +4,7 @@
   "description": "项目webpack配置文件，解决兼容问题",
   "main": "index.js",
   "scripts": {
-    "start": "webpack-dev-server --inline --hot --host 127.0.0.1 --port 80 --colors --content-base build --config  webpack.config.js",
+    "start": "webpack-dev-server --inline --hot --host 127.0.0.1 --port 80 --colors --content-base build --env loc --config  webpack.config.js",
     "build": "webpack --display-error-details --colors --config webpack.config.js"
   },
   "author": "",

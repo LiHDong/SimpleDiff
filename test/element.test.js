@@ -1,5 +1,6 @@
 import Element from "../src/element"
 import Diff from "../src/diff"
+import Patch from "../src/patch"
 
 const tree1 = new Element('div', {'id': 'container'}, [
     new Element('h1', {style: 'color: blue'}, ['simple virtual dom']),
@@ -7,7 +8,8 @@ const tree1 = new Element('div', {'id': 'container'}, [
     new Element('ul', [new Element('li', ["old Tree"])])
 ]);
 
-document.body.appendChild(tree1.render());
+const root = tree1.render();
+document.body.appendChild(root);
 
 const tree2 = new Element('div', {'id': 'container'}, [
     new Element('h1', {style: 'color: red'}, ['simple virtal dom']),
@@ -16,4 +18,6 @@ const tree2 = new Element('div', {'id': 'container'}, [
 ]);
 
 const diff = new Diff();
-diff.diff(tree1, tree2);
+const patches = diff.diff(tree1, tree2);
+const patch = new Patch();
+patch.patch(root, patches);
