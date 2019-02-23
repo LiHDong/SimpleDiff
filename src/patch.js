@@ -30,7 +30,7 @@ class Patch {
                 case Patch.REPLACE:
                     node.parentNode.replaceChild((typeof item.node === "string") ?
                         document.createTextNode(item.node) :
-                        item.node.render()
+                        item.node.render(), node
                     );
                     break;
                 case Patch.REORDER:

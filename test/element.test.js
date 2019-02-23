@@ -19,5 +19,6 @@ const tree2 = new Element('div', {'id': 'container'}, [
 
 const diff = new Diff();
 const patches = diff.diff(tree1, tree2);
+console.log(patches, 555);
 const patch = new Patch();
 patch.patch(root, patches);
